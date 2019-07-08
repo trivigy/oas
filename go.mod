@@ -1,4 +1,4 @@
-module github.com/trivigy/oas
+module github.com/trivigy/oas/v3
 
 go 1.12
 
