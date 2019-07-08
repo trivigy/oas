@@ -19,6 +19,8 @@ linters:
     - unused
     - errcheck
     - ineffassign
+    - gocyclo
+    - dupl
 
 issues:
   exclude-use-default: false
