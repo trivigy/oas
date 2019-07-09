@@ -10,49 +10,28 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type ResponseSuite struct {
+type SecurityRequirementSuite struct {
 	suite.Suite
 }
 
-func (r *ResponseSuite) TestResponse() {
+func (r *SecurityRequirementSuite) TestSecurityRequirement() {
 	testCases := []struct {
 		shouldFail bool
-		expected   *Response
+		expected   *SecurityRequirement
 	}{
 		{
 			false,
-			&Response{
-				Description: "A complex object array response",
-				Content: map[string]*MediaType{
-					"application/json": {
-						Schema: &Schema{
-							Type: "array",
-							Items: &Schema{
-								Ref: "#/components/schemas/VeryComplexType",
-							},
-						},
-					},
+			&SecurityRequirement{
+				"petstore_auth": {
+					"write:pets",
+					"read:pets",
 				},
-				Headers: map[string]*Header{
-					"X-Rate-Limit-Limit": {
-						Description: "The number of allowed requests in the current period",
-						Schema: &Schema{
-							Type: "integer",
-						},
-					},
-					"X-Rate-Limit-Remaining": {
-						Description: "The number of remaining requests in the current period",
-						Schema: &Schema{
-							Type: "integer",
-						},
-					},
-					"X-Rate-Limit-Reset": {
-						Description: "The number of seconds left in the current period",
-						Schema: &Schema{
-							Type: "integer",
-						},
-					},
-				},
+			},
+		},
+		{
+			false,
+			&SecurityRequirement{
+				"api_key": {},
 			},
 		},
 	}
@@ -65,7 +44,7 @@ func (r *ResponseSuite) TestResponse() {
 			assert.Fail(r.T(), failMsg, err)
 		}
 
-		actualJSON := &Response{}
+		actualJSON := &SecurityRequirement{}
 		err = json.Unmarshal(rbytesJSON, actualJSON)
 		if (err != nil) != testCase.shouldFail {
 			assert.Fail(r.T(), failMsg, err)
@@ -76,7 +55,7 @@ func (r *ResponseSuite) TestResponse() {
 			assert.Fail(r.T(), failMsg, err)
 		}
 
-		actualYAML := &Response{}
+		actualYAML := &SecurityRequirement{}
 		err = yaml.Unmarshal(rbytesYAML, actualYAML)
 		if (err != nil) != testCase.shouldFail {
 			assert.Fail(r.T(), failMsg, err)
@@ -94,6 +73,6 @@ func (r *ResponseSuite) TestResponse() {
 	}
 }
 
-func TestResponseSuite(t *testing.T) {
-	suite.Run(t, new(ResponseSuite))
+func TestSecurityRequirementSuite(t *testing.T) {
+	suite.Run(t, new(SecurityRequirementSuite))
 }

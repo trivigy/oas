@@ -30,6 +30,19 @@ type OAuthFlow struct {
 	Extensions Extensions `json:"-" yaml:"-"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r OAuthFlow) Clone() (*OAuthFlow, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := OAuthFlow{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r OAuthFlow) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

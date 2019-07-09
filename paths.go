@@ -26,6 +26,19 @@ type Paths struct {
 	Extensions Extensions `json:"-" yaml:"-"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r Paths) Clone() (*Paths, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Paths{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r Paths) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

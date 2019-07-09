@@ -30,6 +30,19 @@ type ServerVariable struct {
 	Extensions Extensions `json:"-" yaml:"-"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r ServerVariable) Clone() (*ServerVariable, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := ServerVariable{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r ServerVariable) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

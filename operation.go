@@ -72,7 +72,7 @@ type Operation struct {
 	// requirement objects need to be satisfied to authorize a request. This
 	// definition overrides any declared top-level security. To remove a
 	// top-level security declaration, an empty array can be used.
-	Security []map[string]*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
+	Security []*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
 
 	// Servers describes an alternative server array to service this operation.
 	// If an alternative server object is specified at the Path Item Object or
@@ -82,6 +82,19 @@ type Operation struct {
 	// Extensions describes additional data can be added to extend the
 	// specification at certain points.
 	Extensions Extensions `json:"-" yaml:"-"`
+}
+
+// Clone returns a new deep copied instance of the object.
+func (r Operation) Clone() (*Operation, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Operation{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
 }
 
 // MarshalJSON returns the JSON encoding.
@@ -276,7 +289,7 @@ func (r *Operation) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		value := make([]map[string]*SecurityRequirement, 0)
+		value := make([]*SecurityRequirement, 0)
 		if err := yaml.Unmarshal(rbytes, &value); err != nil {
 			return errors.WithStack(err)
 		}

@@ -82,6 +82,19 @@ type Header struct {
 	Extensions Extensions `json:"-" yaml:"-"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r Header) Clone() (*Header, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Header{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r Header) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

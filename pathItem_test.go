@@ -10,46 +10,62 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type ResponseSuite struct {
+type PathItemSuite struct {
 	suite.Suite
 }
 
-func (r *ResponseSuite) TestResponse() {
+func (r *PathItemSuite) TestPathItem() {
 	testCases := []struct {
 		shouldFail bool
-		expected   *Response
+		expected   *PathItem
 	}{
 		{
 			false,
-			&Response{
-				Description: "A complex object array response",
-				Content: map[string]*MediaType{
-					"application/json": {
-						Schema: &Schema{
-							Type: "array",
-							Items: &Schema{
-								Ref: "#/components/schemas/VeryComplexType",
+			&PathItem{
+				Get: &Operation{
+					Description: "Returns pets based on ID",
+					Summary:     "Find pets by ID",
+					OperationID: "getPetsById",
+					Responses: map[string]*Response{
+						"200": {
+							Description: "pet response",
+							Content: map[string]*MediaType{
+								"*/*": {
+									Schema: &Schema{
+										Type: "array",
+										Items: &Schema{
+											Ref: "#/components/schemas/Pet",
+										},
+									},
+								},
+							},
+						},
+						"default": {
+							Description: "error payload",
+							Content: map[string]*MediaType{
+								"text/html": {
+									Schema: &Schema{
+										Ref: "#/components/schemas/ErrorModel",
+									},
+								},
 							},
 						},
 					},
 				},
-				Headers: map[string]*Header{
-					"X-Rate-Limit-Limit": {
-						Description: "The number of allowed requests in the current period",
-						Schema: &Schema{
-							Type: "integer",
-						},
-					},
-					"X-Rate-Limit-Remaining": {
-						Description: "The number of remaining requests in the current period",
-						Schema: &Schema{
-							Type: "integer",
-						},
-					},
-					"X-Rate-Limit-Reset": {
-						Description: "The number of seconds left in the current period",
-						Schema: &Schema{
-							Type: "integer",
+				Parameters: []*Parameter{
+					{
+						Name: "id",
+						In:   "path",
+						Header: Header{
+							Description: "ID of pet to use",
+							Required:    true,
+							Schema: &Schema{
+								Type: "array",
+								Items: &Schema{
+									Type: "string",
+								},
+							},
+							Style: "simple",
 						},
 					},
 				},
@@ -65,7 +81,7 @@ func (r *ResponseSuite) TestResponse() {
 			assert.Fail(r.T(), failMsg, err)
 		}
 
-		actualJSON := &Response{}
+		actualJSON := &PathItem{}
 		err = json.Unmarshal(rbytesJSON, actualJSON)
 		if (err != nil) != testCase.shouldFail {
 			assert.Fail(r.T(), failMsg, err)
@@ -76,7 +92,7 @@ func (r *ResponseSuite) TestResponse() {
 			assert.Fail(r.T(), failMsg, err)
 		}
 
-		actualYAML := &Response{}
+		actualYAML := &PathItem{}
 		err = yaml.Unmarshal(rbytesYAML, actualYAML)
 		if (err != nil) != testCase.shouldFail {
 			assert.Fail(r.T(), failMsg, err)
@@ -94,6 +110,6 @@ func (r *ResponseSuite) TestResponse() {
 	}
 }
 
-func TestResponseSuite(t *testing.T) {
-	suite.Run(t, new(ResponseSuite))
+func TestPathItemSuite(t *testing.T) {
+	suite.Run(t, new(PathItemSuite))
 }

@@ -23,6 +23,19 @@ type Discriminator struct {
 	Mapping map[string]string `json:"mapping,omitempty" yaml:"mapping,omitempty"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r Discriminator) Clone() (*Discriminator, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Discriminator{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r Discriminator) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

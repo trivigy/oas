@@ -188,6 +188,19 @@ type Schema struct {
 	Format string `json:"format,omitempty" yaml:"format,omitempty"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r Schema) Clone() (*Schema, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Schema{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r Schema) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

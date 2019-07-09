@@ -87,6 +87,12 @@ func (r *ServerVariableSuite) TestServerVariable() {
 		assert.EqualValues(r.T(), testCase.expected, actualJSON)
 		assert.EqualValues(r.T(), testCase.expected, actualYAML)
 		assert.EqualValues(r.T(), actualJSON, actualYAML)
+
+		actual, err := testCase.expected.Clone()
+		if (err != nil) != testCase.shouldFail {
+			assert.Fail(r.T(), failMsg, err)
+		}
+		assert.EqualValues(r.T(), testCase.expected, actual)
 	}
 }
 

@@ -39,6 +39,19 @@ type Response struct {
 	Extensions Extensions `json:"-" yaml:"-"`
 }
 
+// Clone returns a new deep copied instance of the object.
+func (r Response) Clone() (*Response, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := Response{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
+}
+
 // MarshalJSON returns the JSON encoding.
 func (r Response) MarshalJSON() ([]byte, error) {
 	obj, err := r.MarshalYAML()

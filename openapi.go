@@ -16,8 +16,8 @@ type OpenAPI struct {
 	// info.version string.
 	OpenAPI string `json:"openapi" yaml:"openapi"`
 
-	// Info provides metadata about the API. The metadata MAY be
-	// used by tooling as required.
+	// Info provides metadata about the API. The metadata MAY be used by
+	// tooling as required.
 	Info Info `json:"info" yaml:"info"`
 
 	// Servers desribes an array of Server Objects, which provide connectivity
@@ -38,7 +38,7 @@ type OpenAPI struct {
 	// requirement objects that can be used. Only one of the security
 	// requirement objects need to be satisfied to authorize a request.
 	// Individual operations can override this definition.
-	Security []map[string]*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
+	Security []*SecurityRequirement `json:"security,omitempty" yaml:"security,omitempty"`
 
 	// Tag describes a list of tags used by the specification with additional
 	// metadata. The order of the tags can be used to reflect on their order by
@@ -54,6 +54,19 @@ type OpenAPI struct {
 	// Extensions describes additional data can be added to extend the
 	// specification at certain points.
 	Extensions Extensions `json:"-" yaml:"-"`
+}
+
+// Clone returns a new deep copied instance of the object.
+func (r OpenAPI) Clone() (*OpenAPI, error) {
+	rbytes, err := yaml.Marshal(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	value := OpenAPI{}
+	if err := yaml.Unmarshal(rbytes, &value); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &value, nil
 }
 
 // MarshalJSON returns the JSON encoding.
@@ -188,7 +201,7 @@ func (r *OpenAPI) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		value := make([]map[string]*SecurityRequirement, 0)
+		value := make([]*SecurityRequirement, 0)
 		if err := yaml.Unmarshal(rbytes, &value); err != nil {
 			return errors.WithStack(err)
 		}
